@@ -67,5 +67,6 @@ calculator.controller ('calculatorController', function($scope) {
     $scope.secondNum = 0;
     $scope.sym = 'undefined';
     $scope.result = 0;
+    $scope.show = 0;
    }
 });
