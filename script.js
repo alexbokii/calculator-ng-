@@ -1,72 +1,78 @@
 var calculator = angular.module('calculator', []);
 
 calculator.controller ('calculatorController', function($scope) {
-    $scope.firstNum = 0;
-    $scope.secondNum = 0;
-    $scope.sym = 'undefined';
-    $scope.result;
     $scope.show = 0;
+  
+    var expression = {
+        'firstNum': '',
+        'secondNum': '',
+        'sign': ''
+    };
 
-
-   $scope.getExp = function(num) {
-    if($scope.sym == 'undefined' && $scope.firstNum != 0) {
-        $scope.firstNum = $scope.firstNum + '' + num + '';
-        $scope.show = $scope.firstNum;
-    }
-    else if($scope.sym == 'undefined' && $scope.firstNum == 0) {
-        $scope.firstNum = '' + num + '';
-        $scope.show = $scope.firstNum;
-    }
-    else if ($scope.sym != 'undefined' && $scope.secondNum != 0) {
-         $scope.secondNum = $scope.secondNum + '' + num + '';
-         $scope.show = $scope.secondNum;
-    }
-    else {
-       $scope.secondNum = '' + num + '';
-       $scope.show = $scope.secondNum;
-    }
-   };
-
-   $scope.calc = function(sym) {
-    if($scope.sym == 'undefined' && $scope.firstNum != 0) {
-        $scope.sym = sym;
-    }
-    $scope.show = $scope.sym;
-   };
-
-   $scope.count = function() {
-    $scope.firstNum = parseFloat($scope.firstNum);
-    $scope.secondNum = parseFloat($scope.secondNum);
-    
-    if($scope.sym == '+') {
-        $scope.result = $scope.firstNum + $scope.secondNum;
+    $scope.getExp = function(num) {
+        if(expression['sign'] == '') {
+            expression['firstNum'] = expression['firstNum'] +  num;
+            $scope.show = expression['firstNum'];
+        }
+        else {
+            expression['secondNum'] = expression['secondNum'] + num;
+            $scope.show = expression['secondNum'];
+        }
     }
 
-    else if($scope.sym == '-') {
-        $scope.result = $scope.firstNum - $scope.secondNum;
+    $scope.calc = function(sym) {
+        if(expression['sign'] != '' && expression['secondNum'] != '') {
+           var newFirst = calculate(expression);
+            expression = cleanExpression();
+            expression['firstNum'] = newFirst;
+        }
+        expression['sign'] = sym;
+        $scope.show = expression['sign'];
     }
 
-    else if($scope.sym == '*') {
-        $scope.result = $scope.firstNum * $scope.secondNum;
+    $scope.count = function() {
+        $scope.show = calculate(expression);
+        expression = cleanExpression();
+        expression['firstNum'] = $scope.show;
     }
 
-    else {
-        $scope.result = $scope.firstNum / $scope.secondNum;
+    $scope.reset = function() {
+        expression = cleanExpression();
+        $scope.show = 0;
     }
-
-    $scope.show = $scope.result;
-
-    
-    $scope.firstNum = $scope.result;
-    $scope.secondNum = 0;
-    $scope.sym = 'undefined'
-   }
-
-   $scope.reset = function() {
-    $scope.firstNum = 0;
-    $scope.secondNum = 0;
-    $scope.sym = 'undefined';
-    $scope.result = 0;
-    $scope.show = 0;
-   }
 });
+
+function calculate(expression) {    
+    if(expression['firstNum'] == '') {
+        expression['firstNum'] = 0;
+    }
+    if(expression['secondNum'] == '') {
+        expression['secondNum'] = expression['firstNum'];
+    }
+
+    expression['firstNum'] = parseFloat(expression['firstNum']);
+    expression['secondNum'] = parseFloat(expression['secondNum']);
+
+    var result;
+    if(expression['sign'] == "+") {
+        result = expression['firstNum'] + expression['secondNum'];
+    }
+    else if(expression['sign'] == "-") {
+        result = expression['firstNum'] - expression['secondNum'];
+    }
+    else if(expression['sign'] == "*") {
+        result = expression['firstNum'] * expression['secondNum'];
+    }
+    else if(expression['sign'] == "/") {
+        result = expression['firstNum'] / expression['secondNum'];
+    }
+    return result;
+}
+
+function cleanExpression() {
+    return {
+        'firstNum': '',
+        'secondNum': '',
+        'sign': ''
+    };
+}
