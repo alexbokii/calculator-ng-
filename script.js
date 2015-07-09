@@ -66,6 +66,9 @@ function calculate(expression) {
     else if(expression['sign'] == "/") {
         result = expression['firstNum'] / expression['secondNum'];
     }
+
+    result = result || 0;
+    
     return result;
 }
 
